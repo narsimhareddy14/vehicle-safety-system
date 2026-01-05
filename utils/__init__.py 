@@ -1,0 +1,7 @@
+"""
+Utility package for vehicle safety system.
+Contains helper functions and shared utilities.
+"""
+
+# This file makes the utils directory a Python package
+# Individual modules can be imported as needed

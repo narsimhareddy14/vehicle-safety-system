@@ -1,0 +1,7 @@
+"""
+Camera package for vehicle safety system.
+Handles image capture and facial recognition matching.
+"""
+
+# This file makes the camera directory a Python package
+# Individual modules can be imported as needed

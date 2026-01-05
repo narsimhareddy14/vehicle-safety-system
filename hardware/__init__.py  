@@ -1,0 +1,7 @@
+"""
+Hardware control package for vehicle safety system.
+Manages GPIO, LEDs, relay, and button input.
+"""
+
+# This file makes the hardware directory a Python package
+# Individual modules can be imported as needed

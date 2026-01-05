@@ -1,0 +1,7 @@
+"""
+Database package for vehicle safety system.
+Manages storage and retrieval of driver authorization data.
+"""
+
+# This file makes the database directory a Python package
+# Individual modules can be imported as needed
