@@ -14,7 +14,7 @@ from hardware.relay_control import activate_relay, deactivate_relay
 from hardware.button_input import wait_for_button_press, is_button_pressed
 from camera.camera_capture import capture_live_face, capture_license_photo
 from camera.face_match import compare_face_with_database
-from database.db_manager import initialize_database, store_new_registration
+from database.db_manager import initialize_database, store_new_registration, log_login_attempt
 
 
 def initialize_system():
@@ -41,55 +41,46 @@ def initialize_system():
 
 def handle_ignition_attempt():
     """Process driver authorization when button is pressed"""
-    print("\nIgnition attempt detected - Button pressed")
-    print("Capturing live driver face...")
-    
-    # Capture live face from camera
+    print("\nIgnition attempt detected")
+
+    # Capture live face
     live_face_image = capture_live_face()
-    
+
     if live_face_image is None:
-        print("Error: Failed to capture face. Please try again.")
+        print("Face capture failed")
         return
-    
-    print("Comparing face with authorized drivers...")
-    
-    # Compare captured face with database
+
+    # Face matching step
     match_found = compare_face_with_database(live_face_image)
-    
+
     if match_found:
-        # Authorization successful
-        print("✓ Driver authorized - Match found")
-        print("Starting vehicle...")
-        
-        # Turn OFF red LED
+        print("Driver authorized")
+
+        # Turn off red LED and turn on green LED
         turn_off_red_led()
-        
-        # Turn ON green LED
         turn_on_green_led()
         
         # Activate relay to start motor
         activate_relay()
         
-        print("Green LED ON - Ignition ON")
-        print("Motor running - Vehicle operational")
-        
+        # Log authorized attempt
+        log_login_attempt("AUTHORIZED")
+
     else:
-        # No match found - new registration
-        print("✗ Driver not authorized - No match found")
-        print("Capturing license photo for registration...")
-        
-        # Capture driver license photo
-        license_photo = capture_license_photo()
-        
-        if license_photo is not None:
-            # Store new registration in database
-            store_new_registration(license_photo)
-            print("New driver registered successfully")
-        else:
-            print("Error: Failed to capture license photo")
-        
+        print("Driver NOT authorized")
+
+        # Capture license photo for registration
+        license_image = capture_license_photo()
+        if license_image:
+            store_new_registration(license_image)
+
         # Keep ignition OFF
-        print("Ignition remains OFF - Red LED ON")
+        turn_on_red_led()
+        turn_off_green_led()
+        deactivate_relay()
+        
+        # Log unauthorized attempt
+        log_login_attempt("UNAUTHORIZED")
 
 
 def main():
